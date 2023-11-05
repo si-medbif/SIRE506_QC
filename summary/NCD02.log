@@ -1,0 +1,33 @@
+PLINK v1.90b7 64-bit (16 Jan 2023)
+Options in effect:
+  --check-sex
+  --map /Users/manager/Dropbox/Research/SI_Health/genotype/ASA-Data-20230921/ASA_NCD_01_set2.map
+  --out summary/NCD02
+  --ped /Users/manager/Dropbox/Research/SI_Health/genotype/ASA-Data-20230921/ASA_NCD_01_set2.ped
+
+Hostname: Bhooms-MacBook-Pro.local
+Working directory: /Users/manager/Library/CloudStorage/OneDrive-MahidolUniversity/Lecture/SIRE506/2023/20231106-L10/PLINK_QC/gwas_qc
+Start time: Mon Nov  6 06:05:40 2023
+
+Random number seed: 1699225540
+65536 MB RAM detected; reserving 32768 MB for main workspace.
+Scanning .ped file... done.
+Performing single-pass .bed write (659184 variants, 663 people).
+--file: summary/NCD02-temporary.bed + summary/NCD02-temporary.bim +
+summary/NCD02-temporary.fam written.
+659184 variants loaded from .bim file.
+663 people (415 males, 248 females) loaded from .fam.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 663 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Warning: 1905 het. haploid genotypes present (see summary/NCD02.hh ); many
+commands treat these as missing.
+Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+treat these as missing.
+Total genotyping rate is 0.993928.
+659184 variants and 663 people pass filters and QC.
+Note: No phenotypes present.
+--check-sex: 20774 Xchr and 0 Ychr variant(s) scanned, no problems detected.
+Report written to summary/NCD02.sexcheck .
+
+End time: Mon Nov  6 06:06:01 2023
