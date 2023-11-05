@@ -125,6 +125,7 @@ $plink2 --pfile clean_data/chr22_geno --mind --make-pgen --out clean_data/chr22_
 -   We need to use PLINK1.9 to check for sex inconsistency.
 
 -   https://www.cog-genomics.org/plink/1.9/basic_stats#check_sex
+- This chunk use data outside of the current repository.
 
 ```{bash eval=FALSE}
 $plink19 --ped ~/Dropbox/Research/SI_Health/genotype/ASA-Data-20230921/ASA_NCD_01_set2.ped \
