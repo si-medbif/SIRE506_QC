@@ -4,19 +4,20 @@ format: html
 editor: visual
 ---
 
-Setting Up Environment
+## Setting Up Environment
 
-{r}
+```{r}
 # find the location of plink2/checking to see if plink2 can be accessible via the current path
 system("which plink2")
+```
 
 We need to set the path for plink here if plink is not installed in the sytem path.
 
-You should change the path to your installed version of PLINK below.
+-   You should change the path to your installed version of PLINK below.
 
-We will install GWASTools to help create Manhattan plot & QQPlot
+-   We will install GWASTools to help create Manhattan plot & QQPlot
 
-{r plink_path}
+```{r plink_path}
 # this will provide the path to plink1.9 and plink2 installed in other locations
 # change this location according to your system paths
 Sys.setenv(plink19 = "/Users/manager/Downloads/00-Bioinformatics/plink19", 
@@ -27,134 +28,153 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("GWASTools")
 library(GWASTools)
 library(ggplot2)
+```
 
-Data
+## Data
 
-Data in the current example is chr22 data already formatted in PLINK2 pgen binary format. The data folder contains these files.
+Data in the current example is `chr22` data already formatted in PLINK2 pgen binary format. The data folder contains these files.
 
-{bash}
+```{bash}
 ls -l data
+```
 
-Calculate Call Rate
+## Calculate Call Rate
 
-We use the variable $plink2 which have been declared initially to specify the location of PLINK2.
+-   We use the variable `$plink2` which have been declared initially to specify the location of PLINK2.
 
-{bash}
+```{bash}
 echo $plink2
+```
 
-We can see from the result above that we can run PLINK now, as the help message from PLINK2 is shown.
+-   We can see from the result above that we can run PLINK now, as the help message from PLINK2 is shown.
 
-To calculate the SNP call rate, see this "Basic Statistics" page from PLINK2 document.
+-   To calculate the SNP call rate, see this ["Basic Statistics"](https://www.cog-genomics.org/plink/2.0/basic_stats "PLINK2 Basic Statistics") page from PLINK2 document.
 
-For missing i.e. 1 - (call rate), this could be calculated at the individual level or as a SNP position level.
+-   For [missing](https://www.cog-genomics.org/plink/2.0/basic_stats#missing) i.e. 1 - (call rate), this could be calculated at the individual level or as a SNP position level.
 
-{bash missing}
+```{bash missing}
 $plink2 --pfile data/chr22 --missing --out summary/missing
+```
 
-{r missing_data1}
+```{r missing_data1}
 sample_missing_rate = readr::read_table("summary/missing.smiss")
 variant_missing_rate <- readr::read_table("summary/missing.vmiss")
+```
 
-Sample missing rate (smiss)
+### Sample missing rate (`smiss`)
 
-{r smiss_plot}
+```{r smiss_plot}
 smr.plot <- ggplot2::ggplot(data = sample_missing_rate, aes(x=F_MISS))
 smr.plot + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
   geom_density(alpha = .2, fill = "#FF6666")
+```
 
-Variant missing rate (vmiss)
+### Variant missing rate (`vmiss`)
 
-{r vmiss_plot1}
+```{r vmiss_plot1}
 vmr.plot <- ggplot2::ggplot(data = variant_missing_rate,
                             aes(x=F_MISS))
 vmr.plot + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
   geom_density(alpha = .2, fill = "#FF6666")
+```
 
-{r vmiss_plot2}
+```{r vmiss_plot2}
 vmr.plot2 <- ggplot2::ggplot(data = variant_missing_rate[
   which(variant_missing_rate$F_MISS>0.02),],
                             aes(x=F_MISS))
 vmr.plot2 + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
   geom_density(alpha = .2, fill = "#FF6666")
+```
 
-Filter missing genotype
+## Filter missing genotype
 
---geno will filter (exclude) variant missing more than 10% (default).
+-   `--geno` will filter (exclude) variant missing more than 10% (default).
 
---mind will filter (exclude) samples missing more than 10% (default).
+-   `--mind` will filter (exclude) samples missing more than 10% (default).
 
-See Missing genotype rates
+-   See [Missing genotype rates](https://www.cog-genomics.org/plink/2.0/filter#missing)
 
-{bash}
+```{bash}
 $plink2 --pfile data/chr22 --geno --mind --make-pgen --out clean_data/chr22_geno
+```
 
-534 variants were removed, 9908 variants remained.
+-   534 variants were removed, 9908 variants remained.
 
-Exclude samples missing > 10%
+    ## Exclude samples missing \> 10%
 
-After excluding bad genotypes from the data, we recalculate the sample missing rate again, and exclude samples with genotyping problems i.e. missing more than 10% of the genotypes.
+    -   After excluding bad genotypes from the data, we recalculate the sample missing rate again, and exclude samples with genotyping problems i.e. missing more than 10% of the genotypes.
 
-{bash}
-$plink2 --pfile clean_data/chr22_geno --missing --out summary/chr22_geno
+    ```{bash}
+    $plink2 --pfile clean_data/chr22_geno --missing --out summary/chr22_geno
+    ```
 
-We will focus only on the sample missing rate.
+-   We will focus only on the sample missing rate.
 
-{r missing_data2}
-sample_missing_rate2 = readr::read_delim("summary/chr22_geno.smiss")
-variant_missing_rate2 <- readr::read_delim("summary/chr22_geno.vmiss")
+    ```{r missing_data2}
+    sample_missing_rate2 = readr::read_delim("summary/chr22_geno.smiss")
+    variant_missing_rate2 <- readr::read_delim("summary/chr22_geno.vmiss")
 
-smr.plot2 <- ggplot2::ggplot(data = sample_missing_rate2, aes(x=F_MISS))
-smr.plot2 + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
-  geom_density(alpha = .2, fill = "#FF6666")
-vmr.plot2 <- ggplot2::ggplot(data = variant_missing_rate2, aes(x=F_MISS))
-vmr.plot2 + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
-  geom_density(alpha = .2, fill = "#FF6666")
+    smr.plot2 <- ggplot2::ggplot(data = sample_missing_rate2, aes(x=F_MISS))
+    smr.plot2 + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
+      geom_density(alpha = .2, fill = "#FF6666")
+    vmr.plot2 <- ggplot2::ggplot(data = variant_missing_rate2, aes(x=F_MISS))
+    vmr.plot2 + geom_histogram(aes(y=after_stat(density)), colour="black", fill="white") + 
+      geom_density(alpha = .2, fill = "#FF6666")
+    ```
 
-{bash}
+```{bash}
 $plink2 --pfile clean_data/chr22_geno --mind --make-pgen --out clean_data/chr22_geno_mind
+```
 
-For this dataset, we can see that no one has more than 10% missing genotype. However, we create a file corresponded to the QC step that have been done.
+-   For this dataset, we can see that no one has more than 10% missing genotype. However, we create a file corresponded to the QC step that have been done.
 
-Check Sex
+## Check Sex
 
-We need to use PLINK1.9 to check for sex inconsistency.
+-   We need to use PLINK1.9 to check for sex inconsistency.
 
-https://www.cog-genomics.org/plink/1.9/basic_stats#check_sex
+-   https://www.cog-genomics.org/plink/1.9/basic_stats#check_sex
 
-This chunk use data outside of the current repository.
+-   This chunk use data outside of the current repository.
 
-{bash eval=FALSE}
+```{bash eval=FALSE}
 $plink19 --ped ~/Dropbox/Research/SI_Health/genotype/ASA-Data-20230921/ASA_NCD_01_set2.ped \
 --map ~/Dropbox/Research/SI_Health/genotype/ASA-Data-20230921/ASA_NCD_01_set2.map \
 --check-sex --out summary/NCD02
+```
 
-{r sexcheck}
+```{r sexcheck}
 sexcheck <- readr::read_table("summary/NCD02.sexcheck")
+```
 
-Tabulate the results
+-   Tabulate the results
 
-{r}
+```{r}
 table(sexcheck$STATUS)
+```
 
-{r}
+```{r}
 sexcheck.plot <- ggplot(data = sexcheck, aes(x=FID, y=F)) 
 sexcheck.plot + geom_point(size=2, shape = 23)
+```
 
-Calculate Hardy-Weinberg Equilibrium
+## Calculate Hardy-Weinberg Equilibrium
 
-{bash}
+```{bash}
 $plink2 --pfile clean_data/chr22_geno_mind --hardy --out summary/hwe
+```
 
-{r}
+```{r}
 hwe <- readr::read_table("summary/hwe.hardy")
 hwe.y <- rchisq(nrow(hwe),1)
 GWASTools::qqPlot(hwe$P)
+```
 
-Using Bonferroni correction, there are hwe$P < 0.05/nrow(hwe) variants likely have genotyping errors.
+-   Using Bonferroni correction, there are `hwe$P < 0.05/nrow(hwe)` variants likely have genotyping errors.
 
-{r}
-sum(hwe$P < 0.05/nrow(hwe))
+    ```{r}
+    sum(hwe$P < 0.05/nrow(hwe))
+    ```
 
-{r}
-hwe %>% filter(P < 0.05/nrow(hwe)) %>% arrange(P) %>% select(c("#CHROM", "ID", "P"))
-
+    ```{r}
+    hwe %>% filter(P < 0.05/nrow(hwe)) %>% arrange(P) %>% select(c("#CHROM", "ID", "P"))
+    ```
